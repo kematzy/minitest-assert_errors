@@ -18,6 +18,11 @@ end
 
 desc 'Run Rubocop report'
 task :rubocop do
-  `rubocop -f html -o ./Rubocop-report.html lib/`
-  # `open Rubocop-report.html` # if OSX
+  res = `which rubocop`
+  if res != ""
+    `rubocop -f html -o ./rubocop/report.html lib/`
+    # `open rubocop/report.html` # if OSX
+  else
+    puts "\nERROR: 'rubocop' gem is not installed or available. Please install with 'gem install rubocop'."
+  end
 end
