@@ -3,15 +3,13 @@
 Adds Minitest assertions to test for errors raised or not raised by Minitest itself. Most **useful 
 when testing other Minitest assertions** or as a shortcut to other tests.
 
-**NOTE!!**
-
 Currently adds the following methods:
 
 ### Minitest::Assertions
 
-*  **`:assert_have_error(expected_msg, klass = Minitest::Assertion, &blk)`**
+*  **`assert_have_error()`** - also aliased as **`assert_error_raised()`**
 
-* **`:assert_no_error(&blk)`** also aliased as **`:refute_error()`**
+* **`assert_no_error()`** - also aliased as **`:refute_error()`**
 
 ### Minitest::Expectations
 
@@ -58,8 +56,8 @@ Adding the above to your `spec_helper.rb` file automatically adds the key helper
 
 <br>
 
-### `assert_have_error(expected_msg, klass = Minitest::Assertion, &blk)`
-&nbsp; -- also aliased as: `assert_error_raised()` 
+#### `assert_have_error(expected_msg, klass = Minitest::Assertion, &blk)`
+&nbsp; -- also aliased as: **`assert_error_raised()`** 
 
 Assertion method to test for an error raised by Minitest
 
@@ -93,8 +91,9 @@ when something is wrong.
 
 <br>
 
-### `assert_no_error(&blk)`
-&nbsp; -- also aliased as: `refute_error()` or `refute_error_raised()` or `assert_no_error_raised()` 
+#### `assert_no_error(&blk)`
+&nbsp; -- also aliased as: **`refute_error()`** or **`refute_error_raised()`** or 
+**`assert_no_error_raised()`** 
 
   
 Assertion method to test for no error being raised by Minitest test.
