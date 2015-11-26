@@ -11,7 +11,7 @@ Currently adds the following methods:
 
 * **`assert_no_error()`** - also aliased as **`:refute_error()`**
 
-### Minitest::Expectations
+### Minitest::Expectations - for use with Minitest::Spec
 
 * **actual.`must_have_error(expected_msg)`**
 
@@ -38,7 +38,7 @@ Or install it yourself as:
 
 ## Usage
 
-Add the gem to your **Gemfile** or **.gemspec** file and then load the gem in your 
+Add the gem to your *Gemfile* or *.gemspec* file and then load the gem in your 
 `(test|spec)_helper.rb` file as follows:
 
 ```ruby
