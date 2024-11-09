@@ -16,7 +16,9 @@ describe Minitest::Spec do
   describe 'overview' do
     it 'assert(false, "error message") - should catch raised error' do
       assert_have_error('error message') { assert(false, 'error message') }
+
       # ===
+
       _ { assert(false, 'error message') }.must_have_error('error message')
     end
 
@@ -24,7 +26,9 @@ describe Minitest::Spec do
       assert_have_error('Minitest::Assertion expected but nothing was raised.') do
         assert_have_error('error message') { assert(true, 'error message') }
       end
+
       # ===
+
       assert_no_error { assert(true, 'error message') }
 
       # ---
@@ -37,16 +41,24 @@ describe Minitest::Spec do
     end
 
     it 'assert_equal(a, b, "error message") - should catch raised error' do
-      assert_have_error(/error message.+Actual:\s+"b"/m) { assert_equal('a', 'b', 'error message') }
+      assert_have_error(/error message.+Actual:\s+"b"/m) do
+        assert_equal('a', 'b', 'error message')
+      end
+
       # ===
-      _ { assert_equal('a', 'b', 'error message') }.must_have_error(/error message.+Actual:\s+"b"/m)
+
+      _ do
+        assert_equal('a', 'b', 'error message')
+      end.must_have_error(/error message.+Actual:\s+"b"/m)
     end
 
     it 'assert_equal(a,a, "error message") - no error raised' do
       assert_have_error('Minitest::Assertion expected but nothing was raised.') do
         assert_have_error('error message') { assert_equal('a', 'a', 'error message') }
       end
+
       # ===
+
       assert_no_error { assert_equal('a', 'a', 'error message') }
 
       # ----
@@ -54,14 +66,22 @@ describe Minitest::Spec do
       _ do
         _ { assert_equal('a', 'a', 'error message') }.must_have_error('error message')
       end.must_have_error('Minitest::Assertion expected but nothing was raised.')
+
       # ===
+
       _ { assert_equal('a', 'a', 'error message') }.wont_have_error
     end
 
     it 'assert_kind_of(Array, {}, "error message") - should catch raised error' do
-      assert_have_error(/Expected {} to be a kind of Array, not Hash/m) { assert_kind_of(Array, {}) }
+      assert_have_error(/Expected {} to be a kind of Array, not Hash/m) do
+        assert_kind_of(Array, {})
+      end
+
       # ===
-      _ { assert_kind_of(Hash, []) }.must_have_error(/Expected \[\] to be a kind of Hash, not Array/m)
+
+      _ do
+        assert_kind_of(Hash, [])
+      end.must_have_error(/Expected \[\] to be a kind of Hash, not Array/m)
     end
 
     it 'assert_kind_of(Hash, {}, "error message") - no error raised' do
@@ -76,32 +96,44 @@ describe Minitest::Spec do
       _ do
         _ { assert_kind_of(Hash, {}, 'error message') }.must_have_error('error message')
       end.must_have_error('Minitest::Assertion expected but nothing was raised.')
+
       # ===
+
       _ { assert_kind_of(Hash, {}, 'error message') }.wont_have_error
     end
 
     it 'assert_nil("notnil", "error message") - should catch raised error' do
-      assert_have_error(/error message.+Expected "notnil" to be nil/m) { assert_nil('notnil', 'error message') }
+      assert_have_error(/error message.+Expected "notnil" to be nil/m) do
+        assert_nil('notnil', 'error message')
+      end
+
       # ===
-      _ { assert_nil('notnil', 'error message') }.must_have_error(/error message.+Expected "notnil" to be nil/m)
+
+      _ do
+        assert_nil('notnil', 'error message')
+      end.must_have_error(/error message.+Expected "notnil" to be nil/m)
     end
 
     it 'assert_nil(nil, "error message") - no error raised' do
       assert_have_error('Minitest::Assertion expected but nothing was raised.') do
         assert_have_error('error message') { assert_nil(nil, 'error message') }
       end
+
       # ===
+
       assert_no_error { assert_nil(nil, 'error message') }
 
       _ do
         _ { assert_nil(nil, 'error message') }.must_have_error('error message')
       end.must_have_error('Minitest::Assertion expected but nothing was raised.')
+
       # ===
+
       _ { assert_nil(nil, 'error message') }.wont_have_error
     end
 
     # TODO: make this test work properly with appropriate logic and tests
-    # it 'assert_raises(DummyError, "error message") - should catch raised error but not incorrect one' do
+    # it 'assert_raises(DummyError, "error message") - catch raised error but not incorrect one' do
     #   class DummyError < StandardError; end
     #
     #   # error = assert_raises(DummyError) do
@@ -128,7 +160,9 @@ describe Minitest::Spec do
           assert_raises(Minitest::Assertion, 'error message') { assert(true) }
         end
       end
+
       # ====
+
       assert_no_error do
         assert_raises(Minitest::Assertion, 'error message') { assert(false) }
       end
@@ -138,7 +172,9 @@ describe Minitest::Spec do
           assert_raises(Minitest::Assertion, 'error message') { assert(true) }
         end.must_have_error('error message')
       end.must_have_error(/error message.+Minitest::Assertion expected but nothing was raised/m)
-      # # ===
+
+      # ===
+
       _ do
         assert_raises(Minitest::Assertion, 'error message') { assert(false) }
       end.wont_have_error
@@ -151,7 +187,9 @@ describe Minitest::Spec do
         assert(false, 'it works')
       end
 
-      _(assert_raises(Minitest::Assertion) { assert(false, 'it also works') }.message).must_equal 'it also works'
+      _(
+        assert_raises(Minitest::Assertion) { assert(false, 'it also works') }.message
+      ).must_equal 'it also works'
     end
 
     it 'should raise an exception when there is no error raised by the tested code' do
@@ -160,6 +198,7 @@ describe Minitest::Spec do
           assert(true, 'it works')
         end
       end
+
       _(e.message).must_equal 'Minitest::Assertion expected but nothing was raised.'
     end
 
@@ -169,6 +208,7 @@ describe Minitest::Spec do
           assert(false, 'it works')
         end
       end
+
       _(e.message).must_equal %(Expected: "it worked"\n  Actual: "it works")
 
       e2 = assert_raises(Minitest::Assertion) do
@@ -176,6 +216,7 @@ describe Minitest::Spec do
           assert_equal('a', :a)
         end
       end
+
       _(e2.message).must_match(/Expected: \\"a\\".+Actual: :a/m)
     end
   end
@@ -193,11 +234,13 @@ describe Minitest::Spec do
       e = assert_raises(Minitest::Assertion) do
         assert_no_error { assert(false, 'returned error message') }
       end
+
       _(e.message).must_equal 'returned error message'
 
       e = assert_raises(Minitest::Assertion) do
         assert_no_error { assert_equal('a', :a) }
       end
+
       _(e.message).must_equal "Expected: \"a\"\n  Actual: :a"
     end
   end
@@ -208,13 +251,16 @@ describe Minitest::Spec do
         assert(false, 'it works')
       end.must_have_error('it works')
 
-      _(assert_raises(Minitest::Assertion) { assert(false, 'it also works') }.message).must_equal 'it also works'
+      _(assert_raises(Minitest::Assertion) do
+        assert(false, 'it also works')
+      end.message).must_equal 'it also works'
     end
 
     it 'should raise an exception when there is no error raised by the tested code' do
       e = assert_raises(Minitest::Assertion) do
         _ { assert(true, 'it works') }.must_have_error('it works')
       end
+
       _(e.message).must_equal 'Minitest::Assertion expected but nothing was raised.'
     end
 
@@ -224,6 +270,7 @@ describe Minitest::Spec do
           assert(false, 'it works')
         end
       end
+
       _(e.message).must_equal %(Expected: "it worked"\n  Actual: "it works")
 
       e2 = assert_raises(Minitest::Assertion) do
@@ -231,6 +278,7 @@ describe Minitest::Spec do
           assert_equal('a', :a)
         end
       end
+
       _(e2.message).must_match(/Expected: \\"a\\".+Actual: :a/m)
     end
   end
@@ -246,11 +294,13 @@ describe Minitest::Spec do
       e = assert_raises(Minitest::Assertion) do
         _ { assert(false, 'returned error message') }.wont_have_error
       end
+
       _(e.message).must_equal 'returned error message'
 
       e = assert_raises(Minitest::Assertion) do
         _ { assert_equal('a', :a) }.wont_have_error
       end
+
       _(e.message).must_equal "Expected: \"a\"\n  Actual: :a"
     end
 
@@ -258,6 +308,7 @@ describe Minitest::Spec do
       assert_have_error(/error message.+Expected: "a".+Actual: :a/m) do
         assert_no_error { assert_equal('a', :a, 'error message') }
       end
+
       _ do
         _ do
           assert_equal('a', :a, 'error message')
