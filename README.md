@@ -1,8 +1,14 @@
+<!-- markdownlint-disable MD013 MD033 -->
+
 # Minitest::AssertErrors
 
-Adds Minitest assertions to test for errors raised or not raised by Minitest
-itself. Most **useful when testing other Minitest assertions** or as a
-shortcut to other tests.
+[![Ruby](https://github.com/kematzy/minitest-assert_errors/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/kematzy/minitest-assert_errors/actions/workflows/ruby.yml) - [![Gem Version](https://badge.fury.io/rb/minitest-assert_errors.svg)](https://badge.fury.io/rb/minitest-assert_errors) - [![Minitest Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop-minitest)
+
+Coverage: **100%**
+
+Adds [Minitest](https://github.com/seattlerb/minitest) assertions to test for errors raised or not
+raised by Minitest itself. Most **useful when testing other Minitest assertions** or as a shortcut
+to other tests.
 
 ## Added Methods
 
@@ -10,15 +16,16 @@ Currently adds the following methods:
 
 ### Minitest::Assertions
 
-- **`assert_have_error()`** - also aliased as **`assert_error_raised()`**
-
-- **`assert_no_error()`** - also aliased as **`:refute_error()`**
+- **`assert_have_error()`**
+- **`assert_error_raised()`** (alias of `assert_have_error()`)
+- **`assert_no_error()`**
+- **`:refute_error()`**  (alias of `assert_no_error()`)
 
 ### Minitest::Expectations - for use with Minitest::Spec
 
-- **actual.`must_have_error(expected_msg)`**
+- **_(actual).`must_have_error(expected_msg)`**
 
-- **actual.`wont_have_error`**
+- **_(actual).`wont_have_error()`**
 
 ---
 
@@ -51,7 +58,6 @@ Add the gem to your _Gemfile_ or _.gemspec_ file and then load the gem in your
  # <snip...>
 
  require 'minitest/autorun'
-
  require 'minitest/assert_errors'
 
  # <snip...>
@@ -72,11 +78,13 @@ raised or not raised within your tests.
 Assertion method to test for an error raised by Minitest
 
 ```ruby
-  assert_have_error('error message') { assert(false, 'error message') }
+  assert_have_error('error message') do
+    assert(false, 'error message')
+  end
 
   # or
 
-  proc {
+  _{
     assert(false, 'error message')
   }.must_have_error('error message')
 
@@ -94,7 +102,7 @@ the default error message, when something is wrong.
 
   # or
 
-  proc {
+  _{
     assert_equal('a','b', 'error message')
   }.must_have_error(/error message.+Actual:\s+\"b\"/m)
 ```
@@ -109,11 +117,13 @@ the default error message, when something is wrong.
 Assertion method to test for no error being raised by Minitest test.
 
 ```ruby
-  assert_no_error() { assert(true, 'error message') }
+  assert_no_error() do
+    assert(true, 'error message')
+  end
 
   # or
 
-  proc { assert(true) }.wont_have_error
+  _{ assert(true) }.wont_have_error
 ```
 
 Produces a longer error message, combining the given error message with the
@@ -133,46 +143,6 @@ default error message, when something is wrong.
    #=> "error message.\nExpected: \"a\"\n  Actual: :a"
 ```
 
-## Dependencies
-
-This Gem depends upon the following:
-
-### Runtime
-
-- minitest
-
-### Development & Tests
-
-- bundler (~> 1.10)
-- rake (~> 10.0)
-- minitest-rg
-
-- simplecov [optional]
-- rubocop [optional]
-
----
-
-## Contributing
-
-Bug reports and pull requests are welcome on [GitHub](https://github.com/kematzy/minitest-assert_errors).
-
-This project is intended to be a safe, welcoming space for collaboration,
-and contributors are expected to adhere to the [Contributor Covenant](contributor-covenant.org)
-code of conduct.
-
----
-
-## Note on Patches/Pull Requests
-
-- Fork the project.
-- Make your feature addition or bug fix in a separate branch.
-- Add spec tests for it. This is important so I don't break it in a future
-  version unintentionally.
-- Commit, do not mess with Rakefile, version, or history.
-  - (if you want to have your own version, that is fine but bump version
-    in a commit by itself I can ignore when I pull)
-- Send me a pull request. Bonus points for topic branches.
-
 ---
 
 ## Development
@@ -182,15 +152,24 @@ Then, run `bundle exec rake spec` to run the tests.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 
-To release a new version, update the version number in `version.rb`, and
-then run `bundle exec rake release`, which will create a git tag for the
-version, push git commits and tags, and push the `.gem` file to
-[rubygems.org](https://rubygems.org).
+To release a new version:
+  1) update the version number in `version.rb`
+  2) run `bundle exec rake release`, which will create a git tag for the version
+  3) push git commits and tags
+  4) push the `.gem` file to [rubygems.org](https://rubygems.org).
 
----
+## Contributing
+
+Bug reports and pull requests are welcome on [GitHub](https://github.com/kematzy/minitest-assert_errors).
+
+This project is intended to be a safe, welcoming space for collaboration, and contributors are
+expected to adhere to the [Contributor Covenant](contributor-covenant.org) code of conduct.
 
 ## Copyright
 
-Copyright (c) 2015 Kematzy
+Copyright (c) 2015 - 2024 Kematzy
 
-Released under the MIT License. See LICENSE for further details.
+## License
+
+The gem is available as open source under the terms of the
+[MIT License](http://opensource.org/licenses/MIT).
