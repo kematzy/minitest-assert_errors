@@ -1,7 +1,16 @@
 # frozen_string_literal: true
 
 require 'minitest'
+
+# loading core files using relative paths
+# require_relative 'snapshot/version'
+
+# Alternative loading version when the `lib` directory is in the `$LOAD_PATH`
 require 'minitest/assert_errors/version'
+
+# NOTE! loading files in this manner marks the file as 100% covered in code coverage tests
+# even though it has not been tested
+
 
 # reopening to add additional functionality
 module Minitest
