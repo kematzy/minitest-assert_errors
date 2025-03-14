@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
-lib = File.expand_path('lib', __dir__)
-
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-require 'minitest/assert_errors/version'
+# Load the version number
+# NOTE! this load marks the file as executed before the SimpleCov code coverage tests
+# which may result in either 0%, or 100% coverage even it has (not?) been tested.
+require_relative 'lib/minitest/assert_errors/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'minitest-assert_errors'
@@ -19,17 +18,23 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT'
   spec.required_ruby_version = '>= 3.0.0'
 
-  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  # delete this section to allow pushing this gem to any host.
-  # if spec.respond_to?(:metadata)
-  #   spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-  # else
-  #   raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  # end
+  spec.metadata['homepage_uri'] = spec.homepage
+  spec.metadata['source_code_uri'] = 'https://github.com/kematzy/minitest-assert_errors'
+  spec.metadata['documentation_uri'] = 'https://github.com/kematzy/minitest-assert_errors'
+  spec.metadata['changelog_uri'] = 'https://github.com/kematzy/minitest-assert_errors/blob/main/CHANGELOG.md'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(spec|features)/}) }
+  # Specify which files should be added to the gem when it is released.
+  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
+  gemspec = File.basename(__FILE__)
+  spec.files = IO.popen(%w[git ls-files -z], chdir: __dir__, err: IO::NULL) do |ls|
+    ls.readlines("\x0", chomp: true).reject do |f|
+      (f == gemspec) ||
+        f.start_with?(*%w[bin/ test/ spec/ features/ .git .github appveyor Gemfile])
+    end
+  end
   spec.bindir        = 'exe'
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
+
   spec.require_paths = ['lib']
 
   spec.platform         = Gem::Platform::RUBY
@@ -37,7 +42,10 @@ Gem::Specification.new do |spec|
   spec.rdoc_options += ['--quiet', '--line-numbers', '--inline-source', '--title',
                         'Minitest::AssertErrors: assertions to test for errors', '--main', 'README.md']
 
-  spec.add_dependency('minitest', '~> 5.25.0', '>= 5.20.0')
+  # register dependencies
+  spec.add_dependency('minitest', '>= 5.20.0', '< 6.0')
+
+  # development dependencies are found in the Gemfile
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end
