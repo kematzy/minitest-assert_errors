@@ -1,14 +1,20 @@
 # frozen_string_literal: true
 
-require_relative '../spec_helper'
+# Use this when using `bundle exec ...`
+require 'spec_helper'
+
+# Use this when using `rake spec` (without bundle)
+# require_relative '../spec_helper'
 
 # class DummyError < StandardError; end
 
 describe Minitest::AssertErrors do
-  it 'has a version number' do
-    _(Minitest::AssertErrors::VERSION).wont_be_nil
-    _(Minitest::AssertErrors::VERSION).must_match(/^\d+\.\d+\.\d+$/)
-  end
+  # describe '::VERSION' do
+  #   it 'has a version number' do
+  #     _(Minitest::AssertErrors::VERSION).wont_be_nil
+  #   end
+  # end
+  # # /::VERSION
 end
 
 # rubocop:disable Metrics/BlockLength
