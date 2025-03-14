@@ -1,15 +1,19 @@
 # frozen_string_literal: true
 
 require 'bundler/gem_tasks'
-require 'rubocop/rake_task'
+require 'minitest/test_task'
 require 'rake/testtask'
+require 'rubocop/rake_task'
 
+Minitest::TestTask.create
 RuboCop::RakeTask.new
 
 Rake::TestTask.new(:spec) do |t|
-  t.libs << 'spec'
-  t.libs << 'lib'
+  # load the `lib` folder, and the `test | spec` folder.
+  t.libs = %w[lib spec]
   t.test_files = FileList['spec/**/*_spec.rb']
+  # enable extra CLI output, including the CLI command for debugging
+  t.verbose = true
 end
 
 task default: %i[rubocop coverage]
@@ -19,6 +23,6 @@ task test: :spec
 
 desc 'Run specs with coverage'
 task :coverage do
-  ENV['COVERAGE'] = '1'
-  Rake::Task['spec'].invoke
+  ENV['COVERAGE'] = 'true'
+  Rake::Task['spec'].execute
 end
