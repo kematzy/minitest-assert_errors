@@ -11,7 +11,6 @@ require 'minitest/assert_errors/version'
 # NOTE! loading files in this manner marks the file as 100% covered in code coverage tests
 # even though it has not been tested
 
-
 # reopening to add additional functionality
 module Minitest
   # Add support for assert syntax
