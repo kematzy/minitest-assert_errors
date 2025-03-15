@@ -10,7 +10,7 @@ if ENV['COVERAGE']
     # ignore the test files
     add_filter '/spec/'
     # ignore version testing due to loading in the `.gemspec` file causes issues.
-    add_filter 'lib/minitest/snapshot/version.rb'
+    add_filter 'lib/minitest/assert_errors/version.rb'
 
     # track all library files
     track_files 'lib/**/*.rb'
@@ -19,8 +19,6 @@ end
 
 # Ensure the library path is in the load path
 $LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
-
-$LOAD_PATH.unshift File.expand_path('../spec', __dir__)
 
 # # Set up Bundler before loading gems
 # require 'bundler/setup'
