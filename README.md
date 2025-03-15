@@ -2,13 +2,20 @@
 
 # Minitest::AssertErrors
 
-[![Ruby](https://github.com/kematzy/minitest-assert_errors/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/kematzy/minitest-assert_errors/actions/workflows/ruby.yml) - [![Gem Version](https://badge.fury.io/rb/minitest-assert_errors.svg)](https://badge.fury.io/rb/minitest-assert_errors) - [![Minitest Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop-minitest)
+[![Ruby](https://github.com/kematzy/minitest-assert_errors/actions/workflows/ruby.yml/badge.svg?branch=master)](https://github.com/kematzy/minitest-assert_errors/actions/workflows/ruby.yml) - [![Gem Version](https://badge.fury.io/rb/minitest-assert_errors.svg)](https://badge.fury.io/rb/minitest-assert_errors) - [![Minitest Style Guide](https://img.shields.io/badge/code_style-rubocop-briPghtgreen.svg)](https://github.com/rubocop/rubocop-minitest)
 
 Coverage: **100%**
 
-Adds [Minitest](https://github.com/seattlerb/minitest) assertions to test for errors raised or not
-raised by Minitest itself. Most **useful when testing other Minitest assertions** or as a shortcut
-to other tests.
+## Introduction
+
+When writing test libraries or extensions for Minitest, you often need to verify that Minitest's
+own assertions are working correctly. This gem provides specialized assertions to test if Minitest
+itself raises (or doesn't raise) assertion errors with the expected messages.
+
+It's particularly useful when you're developing custom Minitest assertions or testing
+testing-related code.
+
+Adds [Minitest](https://github.com/seattlerb/minitest) assertions to test for errors raised or not raised by Minitest itself. Most **useful when testing other Minitest assertions** or as a shortcut to other tests.
 
 ## Added Methods
 
@@ -16,16 +23,23 @@ Currently adds the following methods:
 
 ### Minitest::Assertions
 
-- **`assert_have_error()`**
-- **`assert_error_raised()`** (alias of `assert_have_error()`)
-- **`assert_no_error()`**
-- **`:refute_error()`**  (alias of `assert_no_error()`)
+```ruby
+assert_have_error(msg, klass = Minitest::Assertion, &block)
+assert_error_raised(msg, klass = Minitest::Assertion, &block)  # alias
+
+assert_no_error(&block)
+refute_error(&block)  # alias
+refute_error_raised(&block)  # alias
+assert_no_error_raised(&block)  # alias
+```
 
 ### Minitest::Expectations - for use with Minitest::Spec
 
-- **_(actual).`must_have_error(expected_msg)`**
+```ruby
+_(actual).must_have_error(msg)
 
-- **_(actual).`wont_have_error()`**
+_(actual).wont_have_error()
+```
 
 ---
 
@@ -52,95 +66,113 @@ gem install minitest-assert_errors
 ## Usage
 
 Add the gem to your _Gemfile_ or _.gemspec_ file and then load the gem in your
-`(test|spec)_helper.rb` file as follows:
+`test_helper.rb` or `spec_helper.rb` file as follows:
 
 ```ruby
- # <snip...>
-
- require 'minitest/autorun'
- require 'minitest/assert_errors'
-
- # <snip...>
+require 'minitest/autorun'
+require 'minitest/assert_errors'
 ```
 
-Adding the above to your `spec_helper.rb` file automatically adds the key
-helper methods to the `Minitest::Assertions` to test for Minitest errors
-raised or not raised within your tests.
+This automatically adds the helper methods to `Minitest::Assertions` and expectations
+to `Minitest::Expectations`.
 
 ---
 
 ## Examples
 
-### `assert_have_error(expected_msg, klass = Minitest::Assertion, &blk)`
+### `#assert_have_error(:msg, :klass, &blk)`
 
-&nbsp; -- also aliased as: **`assert_error_raised()`**
+Tests that a Minitest assertion raises an error with the expected message.
 
-Assertion method to test for an error raised by Minitest
+Unlike `assert_raises` which tests for any exception, this specifically tests that Minitest's
+own assertions are working as expected.
+
+#### Basic Example
 
 ```ruby
-  assert_have_error('error message') do
-    assert(false, 'error message')
-  end
+# Test that Minitest's assert method raises an error with the specified message
+assert_have_error('error message') do
+  assert(false, 'error message')
+end
 
-  # or
-
-  _{
-    assert(false, 'error message')
-  }.must_have_error('error message')
-
+# The same test using spec syntax
+_{ assert(false, 'error message') }.must_have_error('error message')
 ```
 
-Produces a longer error message, combining the given error message with
-the default error message, when something is wrong.
+#### Using Regular Expressions
 
-**NOTE!** The expected error message can be a `String` or `Regexp`.
+The expected error message can be a `String` or `Regexp`:
 
 ```ruby
-  assert_have_error(/error message.+Actual:\s+\"b\"/m) do
-    assert_equal('a','b', 'error message')
+# Test that assert_equal produces an error message containing specific text
+assert_have_error(/error message.+Actual:\s+\"b\"/m) do
+  assert_equal('a', 'b', 'error message')
+end
+
+# The same test using spec syntax
+_{
+  assert_equal('a', 'b', 'error message')
+}.must_have_error(/error message.+Actual:\s+\"b\"/m)
+```
+
+#### Real-world Use Case
+
+When developing your own custom assertions, you might use this to test that your assertion fails with the right message:
+
+```ruby
+# Testing a custom assertion's failure message
+def test_my_custom_assertion_has_right_error_message
+  assert_have_error("expected value to be awesome, but got boring") do
+    assert_awesome("boring")
   end
-
-  # or
-
-  _{
-    assert_equal('a','b', 'error message')
-  }.must_have_error(/error message.+Actual:\s+\"b\"/m)
+end
 ```
 
 ---
 
-### `assert_no_error(&blk)`
+### `#assert_no_error(&blk)`
 
-&nbsp; -- also aliased as: **`refute_error()`** or **`refute_error_raised()`** or
-**`assert_no_error_raised()`**
+Tests that a Minitest assertion does not raise any error, confirming that a test passes correctly.
 
-Assertion method to test for no error being raised by Minitest test.
+#### Basic Example
 
 ```ruby
-  assert_no_error() do
-    assert(true, 'error message')
-  end
+# Test that a passing assertion doesn't raise any error
+assert_no_error do
+  assert(true, 'this should pass')
+end
 
-  # or
-
-  _{ assert(true) }.wont_have_error
+# The same test using spec syntax
+_{ assert(true) }.wont_have_error
 ```
 
-Produces a longer error message, combining the given error message with the
-default error message, when something is wrong.
+#### Failure Example
 
-**NOTE!** The expected error message can be a `String` or `Regexp`.
+If the code inside the block raises a Minitest assertion error, you'll see an error message like this:
 
 ```ruby
- assert_no_error { assert_equal('a', :a, 'error message') }
+# This test will fail because the assertion inside fails
+assert_no_error do
+  assert_equal('a', :a, 'error message')
+end
 
-   #=> "error message.\nExpected: \"a\"\n  Actual: :a"
+# Will produce an error like:
+# "Expected no Minitest error but got: error message.
+# Expected: "a"
+# Actual: :a"
+```
 
- proc {
-   assert_equal('a', :a, 'error message')
- }.wont_have_error
+#### Real-world Use Case
 
-   #=> "error message.\nExpected: \"a\"\n  Actual: :a"
+When testing a helper method that should produce valid test data:
+
+```ruby
+def test_helper_produces_valid_data
+  data = generate_test_data
+  assert_no_error do
+    assert_valid_format(data)
+  end
+end
 ```
 
 ---
