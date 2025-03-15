@@ -30,7 +30,6 @@ Minitest::Runnable.runnables.clear
 # Load Minitest
 require 'minitest/autorun'
 require 'minitest/spec'
-require 'mocha/minitest'
 
 # Load the code being tested
 require 'minitest/assert_errors'
