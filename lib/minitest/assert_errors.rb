@@ -11,62 +11,71 @@ require 'minitest/assert_errors/version'
 # NOTE! loading files in this manner marks the file as 100% covered in code coverage tests
 # even though it has not been tested
 
-# reopening to add additional functionality
 module Minitest
   # Add support for assert syntax
   module Assertions
-    # Assertion method to test for an error raised by Minitest
+    # Asserts that the given block raises a Minitest error with the expected message
     #
-    #     assert_have_error('error message') { assert(false, 'error message') }
+    # @param msg [String, Regexp] The expected error message or pattern
+    # @param klass [Class] The expected error class, defaults to Minitest::Assertion
+    # @yield Block that should raise the expected error
+    # @yieldparam blk [Proc] The original block passed to the assertion
     #
-    #     proc { assert(false, 'error message') }.must_have_error('error message')
+    # @raise [Minitest::Assertion] If block doesn't raise expected error with expected message
     #
+    # @return [void]
     #
-    # Produces an extensive error message, combining the given error message with the default error
-    # message, when something is wrong.
+    # @example Testing for an exact error message
+    #   assert_have_error('error message') { assert(false, 'error message') }
     #
-    # <b>NOTE!</b> The expected error message can be a +String+ or +Regexp+.
+    # @example Using expect syntax
+    #   proc { assert(false, 'error message') }.must_have_error('error message')
     #
-    #     assert_have_error(/error message.+Actual:\s+\"b\"/m) do
-    #       assert_equal('a','b', 'error message')
-    #     end
+    # @example Testing with a regular expression
+    #   assert_have_error(/error message.+Actual:\s+\"b\"/m) do
+    #     assert_equal('a','b', 'error message')
+    #   end
     #
-    #     # or
+    # @example Using expect syntax with regular expression
+    #   _ {
+    #     assert_equal('a','b', 'error message')
+    #   }.must_have_error(/error message.+Actual:\s+\"b\"/m)
     #
-    #     proc {
-    #       assert_equal('a','b', 'error message')
-    #     }.must_have_error(/error message.+Actual:\s+\"b\"/m)
-    #
-    #
-    def assert_have_error(expected_msg, klass = Minitest::Assertion, &blk)
+    def assert_have_error(msg, klass = Minitest::Assertion, &blk)
       e = assert_raises(klass) do
         yield(blk) if block_given?
       end
-      assert_match(expected_msg, e.message) if expected_msg.is_a?(Regexp)
-      assert_equal(expected_msg, e.message) if expected_msg.is_a?(String)
+      assert_match(msg, e.message) if msg.is_a?(Regexp)
+      assert_equal(msg, e.message) if msg.is_a?(String)
     end
     alias assert_error_raised assert_have_error
     # backwards compat. DO NOT USE!
     alias assert_returns_error assert_have_error
 
-    # Assertion method to test for no error being raised by Minitest
+    # Asserts that the given block does not raise a Minitest error
     #
-    #     assert_no_error() { assert(true, 'error message') }
+    # @yield Block that should not raise an error
+    # @yieldparam blk [Proc] The original block passed to the assertion
     #
-    #     proc { assert(true) }.wont_have_error
+    # @raise [Minitest::Assertion] If the block raises an error
     #
-    # Produces an extensive error message, combining the given error message with
-    # the default error message, when something is wrong.
+    # @return [void]
     #
-    # <b>NOTE!</b> The expected error message can be a +String+ or +Regexp+.
+    # @example Testing that no error is raised
+    #   assert_no_error() { assert(true, 'error message') }
     #
-    #     assert_no_error { assert_equal('a', :a, 'error message') }
-    #       #=> "error message.\nExpected: \"a\"\n  Actual: :a"
+    # @example Using expect syntax
+    #   proc { assert(true) }.wont_have_error
     #
-    #     proc {
-    #       assert_equal('a', :a, 'error message')
-    #     }.wont_have_error
-    #       #=> "error message.\nExpected: \"a\"\n  Actual: :a"
+    # @example Testing an assertion that would fail
+    #   assert_no_error { assert_equal('a', :a, 'error message') }
+    #     #=> "error message.\nExpected: \"a\"\n  Actual: :a"
+    #
+    # @example Using expect syntax with failing assertion
+    #   proc {
+    #     assert_equal('a', :a, 'error message')
+    #   }.wont_have_error
+    #     #=> "error message.\nExpected: \"a\"\n  Actual: :a"
     #
     def assert_no_error(&blk)
       assert_silent do
